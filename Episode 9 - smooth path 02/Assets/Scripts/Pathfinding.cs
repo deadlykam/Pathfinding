@@ -80,6 +80,9 @@ public class Pathfinding : MonoBehaviour {
 		List<Node> path = new List<Node>();
 		Node currentNode = endNode;
 		
+		// startNode is NOT added so in best case
+		// scenario where the bot has to travel one
+		// Vector3 point then ONLY the endNode is added
 		while (currentNode != startNode) {
 			path.Add(currentNode);
 			currentNode = currentNode.parent;
@@ -97,10 +100,26 @@ public class Pathfinding : MonoBehaviour {
 		for (int i = 1; i < path.Count; i ++) {
 			Vector2 directionNew = new Vector2(path[i-1].gridX - path[i].gridX,path[i-1].gridY - path[i].gridY);
 			if (directionNew != directionOld) {
-				waypoints.Add(path[i].worldPosition);
+				waypoints.Add(path[i - 1].worldPosition); // Adding the previous path
+									  // because then the bot
+									  // will not travel in weird
+									  // diagonal way in which
+									  // it would walk over
+									  // obstacles. This makes
+									  // hard corner walking
+									  // perfect. It also ensures
+									  // that the end path is added
+									  // if there are only start
+									  // and end path in the
+									  // path[] array.
 			}
 			directionOld = directionNew;
 		}
+		
+		// Making sure the last way point is added
+		if(path.Count != 0 && !waypoints.Contains(path[path.Count - 1].worldPosition))
+			waypoints.Add(path[path.Count - 1].worldPosition));
+		
 		return waypoints.ToArray();
 	}
 	
